@@ -39,13 +39,15 @@ class StatsIds:
         self.gov_stats_codes_dict = self._gov_stats_codes_to_dict()
 
         # 統計表ID一覧
+        # デフォルトでGISで扱いやすい社会・人口統計体系（00200502）のデータフレームを生成する
         self.__stats_table_ids_url = f"http://api.e-stat.go.jp/rest/3.0/app/getSimpleStatsList" \
                                      f"?appId={self.app_id}&lang=J&statsCode={self.gov_stats_code}" \
                                      f"&searchKind=1&explanationGetFlg=N"
         self.__default_stats_table_ids_csv = "./e_stat/assets/default_stats_table_ids.csv"
         self.default_stats_table_ids_df = csv_file_to_df(
             self.__default_stats_table_ids_csv)
-        self.stats_table_ids_df = None
+
+        self.stats_table_ids_df = self._create_stats_table_ids_df()
 
     """プロパティ"""
 
@@ -93,7 +95,7 @@ class StatsIds:
 
     """統計表ID一覧"""
 
-    def create_stats_table_ids_df(self):
+    def _create_stats_table_ids_df(self):
         """統計表ID一覧をAPIから取得して、データフレームとして返す
 
         Returns:

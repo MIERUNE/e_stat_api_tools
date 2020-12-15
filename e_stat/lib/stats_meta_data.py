@@ -1,4 +1,7 @@
-from ..utils import csv_string_to_df, get_api_response, stats_res_formatter
+import sys
+
+from ..utils import csv_string_to_df, df_to_flatten_d_list, extraction_df, get_api_response, output_csv_from_df, \
+    stats_res_formatter
 
 
 class StatsMetaData:
@@ -20,9 +23,9 @@ class StatsMetaData:
         self.default_url = f"http://api.e-stat.go.jp/rest/3.0/app/getSimpleMetaInfo" \
                            f"?appId={self.app_id}" \
                            f"&lang=J&statsDataId={self.stats_data_id}&explanationGetFlg=N"
-        self.stats_meta_data_df = None
+        self.stats_meta_data_df = self._create_stats_meta_data_df()
 
-    def create_stats_meta_data_df(self):
+    def _create_stats_meta_data_df(self):
         """統計表ID一覧をAPIから取得して、データフレームとして返す
 
         Returns:
@@ -48,3 +51,47 @@ class StatsMetaData:
         """
         pattern_row_text = r'.*"CLASS_INF"\n(.*)'
         return stats_res_formatter(text, pattern_row_text)
+
+    def to_dict(
+            self,
+            columns=[
+                "CLASS_OBJ_NAME",
+                "CLASS_CODE",
+                "CLASS_NAME"]):
+        """統計表メタデータのdfからコード必要なカラムのみの辞書のリストで取得
+
+        Args:
+            columns (list): 抽出対象のカラム名
+
+        Returns:
+            list: 辞書のリスト
+
+        Notes:
+            columnsに空のリストを渡すとカラムを削らずそのまま辞書として返す
+
+        """
+        df = self.stats_meta_data_df
+        # columnsを空にするとカラムを削らずそのまま辞書として返す
+        if not columns:
+            df_to_flatten_d_list(df)
+        try:
+            extracted_df = extraction_df(
+                df, columns)
+        except KeyError:
+            print("データフレームに存在するカラム名を指定してください。システムを終了します。")
+            sys.exit(1)
+        return df_to_flatten_d_list(extracted_df)
+
+    def to_csv(
+            self,
+            path="./e_stat/assets/",
+            file_name="meta_data.csv"):
+        """統計表メタデータのdfをcsvファイルとして保存する
+
+        Args:
+            path (str): csvを保存するパス文字列
+            file_name (str): 保存するファイルの名称
+
+        """
+        df = self.stats_meta_data_df
+        output_csv_from_df(df, path, file_name)

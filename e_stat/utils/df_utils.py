@@ -78,7 +78,7 @@ def csv_string_to_df(csv_str):
 
 
 def output_csv_from_df(df, path, file_name):
-    """データフレームを受け取り、csvを返す
+    """データフレームを受け取り、csvを書き出す
 
     Args:
         df (pd.DataFrame): 書き出し対象のデータフレーム

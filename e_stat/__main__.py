@@ -57,8 +57,8 @@ def boundary(pref_name, download_dir):
 def ids(gov_stats_code, output_dir):
     """統計表ID一覧を取得"""
     si = StatsIds(app_id, gov_stats_code)
-    si_df = si.create_stats_table_ids_df()
-    output_csv_from_df(si_df, output_dir, "stats_ids.csv")
+    si_df = si.stats_table_ids_df
+    si.stats_table_ids_to_csv(output_dir, "stats_ids.csv")
     return si_df
 
 
@@ -70,8 +70,8 @@ def ids(gov_stats_code, output_dir):
 def meta(stats_table_id, output_dir):
     """統計表メタデータを取得"""
     smt = StatsMetaData(app_id, stats_table_id)
-    smt_df = smt.create_stats_meta_data_df()
-    output_csv_from_df(smt_df, output_dir, "meta_data.csv")
+    smt_df = smt.stats_meta_data_df
+    smt.to_csv(output_dir, "meta_data.csv")
     return smt_df
 
 
@@ -96,7 +96,7 @@ def stats(areas, class_codes, years, stats_table_id, output_dir):
         class_codes.split(","),
         years.split(","))
     stats_df = sd.stats_df
-    output_csv_from_df(stats_df, output_dir, "stats.csv")
+    sd.to_csv(output_dir, "stats.csv")
     return stats_df
 
 

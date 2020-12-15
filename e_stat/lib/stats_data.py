@@ -1,4 +1,6 @@
-from ..utils import csv_string_to_df, get_api_response, output_csv_from_df
+import sys
+
+from ..utils import csv_string_to_df, df_to_flatten_d_list, extraction_df, get_api_response, output_csv_from_df
 
 
 class StatsData:
@@ -56,8 +58,48 @@ class StatsData:
         row_text = res.text
         return csv_string_to_df(row_text)
 
-    def df_to_csv(self):
-        output_csv_from_df(
-            self.stats_df,
-            self.output_dir,
-            "statistics_data.csv")
+    def to_dict(
+            self,
+            columns=[
+                "cat01_code",
+                "地域",
+                "調査年",
+                "unit",
+                "value"]):
+        """統計データのdfからコード必要なカラムのみの辞書のリストで取得
+
+        Args:
+            columns (list): 抽出対象のカラム名
+
+        Returns:
+            list: 辞書のリスト
+
+        Notes:
+            columnsに空のリストを渡すとカラムを削らずそのまま辞書として返す
+
+        """
+        df = self.stats_df
+        # columnsを空にするとカラムを削らずそのまま辞書として返す
+        if not columns:
+            df_to_flatten_d_list(df)
+        try:
+            extracted_df = extraction_df(
+                df, columns)
+        except KeyError:
+            print("データフレームに存在するカラム名を指定してください。システムを終了します。")
+            sys.exit(1)
+        return df_to_flatten_d_list(extracted_df)
+
+    def to_csv(
+            self,
+            path="./e_stat/assets/",
+            file_name="stats.csv"):
+        """統計データのdfをcsvファイルとして保存する
+
+        Args:
+            path (str): csvを保存するパス文字列
+            file_name (str): 保存するファイルの名称
+
+        """
+        df = self.stats_df
+        output_csv_from_df(df, path, file_name)

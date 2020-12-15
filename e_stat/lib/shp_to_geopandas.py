@@ -100,7 +100,6 @@ class ShapeToGeoPandas:
 
         """
         print("読み込みファイル：", str(Path(path).resolve()))
-        print(f"suffix={Path(path).suffix.lstrip('.')}")
 
         if self._is_shp_file(path) is True:
             print("shpファイルをgdfに変換します")

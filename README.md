@@ -114,7 +114,7 @@ pipenv run python -m e_stat merge-boundary \
   -c A1101 \
   -y 2000 \
   -st 0000020101 \
-  -o ./created_csv
+  -o ./created
 ```
 
 or
@@ -122,3 +122,9 @@ or
 ```shell script
 % bash merge_boundary.sh
 ```
+
+### work flow
+
+- `e_stat/assets/government_statistics_codes.tsv`から取得したい政府統計名の政府統計コードを取得します
+    - [政府統計コード一覧](https://www.e-stat.go.jp/help/stat-search-3-5)
+-  
