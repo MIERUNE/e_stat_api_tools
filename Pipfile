@@ -1,0 +1,18 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+requests = "==2.25.0"
+geopandas = "==0.8.1"
+pandas = "==1.1.5"
+tqdm = "==4.54.1"
+click = "==7.1.2"
+python-dotenv = "==0.15.0"
+geojson = "==2.5.0"
+
+[requires]
+python_version = "3.9"
