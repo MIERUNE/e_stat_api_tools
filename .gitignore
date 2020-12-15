@@ -3,7 +3,7 @@
 /download_file/
 /extract_zip/
 /test/
-/created_csv/
+/created/
 .prettierrc
 .node-version
 package-lock.json

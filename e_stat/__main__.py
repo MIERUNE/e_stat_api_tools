@@ -4,7 +4,7 @@ import click
 
 from .env_settings import app_id
 from .lib import AreaCode, GdfDissolve, PrefCode, ShapeToGeoPandas, StatsData, StatsIds, StatsMetaData, MergeBoundaryStats
-from .utils import output_csv_from_df
+from .utils import df_to_geojson, geojson_str_to_obj, output_csv_from_df, write_geojson
 
 
 @click.group()
@@ -42,7 +42,10 @@ def boundary(pref_name, download_dir):
     geo_d.dissolve_poly("AREA_CODE")
     boundary_gdf = geo_d.new_gdf
 
-    output_csv_from_df(boundary_gdf, "./created_csv/", "boundarys.csv")
+    geojson_obj = geojson_str_to_obj(df_to_geojson(boundary_gdf))
+    write_geojson(geojson_obj, "./created/", "boundary.geojson")
+
+    output_csv_from_df(boundary_gdf, "./created/", "boundary.csv")
     return boundary_gdf
 
 
@@ -143,7 +146,11 @@ def merge_boundary(
     geo_d.join_columns("AREA_CODE", "PREF", "CITY")
     geo_d.dissolve_poly("AREA_CODE")
     boundary_gdf = geo_d.new_gdf
-    output_csv_from_df(boundary_gdf, "./created_csv/", "boundarys.csv")
+
+    geojson_obj = geojson_str_to_obj(df_to_geojson(boundary_gdf))
+    write_geojson(geojson_obj, "./created/", "boundary.geojson")
+
+    output_csv_from_df(boundary_gdf, "./created/", "boundary.csv")
 
     mbs = MergeBoundaryStats(app_id,
                              stats_table_id,
@@ -152,6 +159,10 @@ def merge_boundary(
                              class_code,
                              year)
     merge_boundary_df = mbs.merged_df
+
+    geojson_obj = geojson_str_to_obj(df_to_geojson(merge_boundary_df))
+    write_geojson(geojson_obj, "./created/", "merge_boundary.geojson")
+
     output_csv_from_df(merge_boundary_df, output_dir, "merge_boundary.csv")
 
 

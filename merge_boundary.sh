@@ -7,4 +7,4 @@ pipenv run python -m e_stat merge-boundary \
   -c A1101 \
   -y 2000 \
   -st 0000020101 \
-  -o ./created_csv
+  -o ./created
