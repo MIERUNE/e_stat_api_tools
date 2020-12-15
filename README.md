@@ -26,7 +26,9 @@ echo "app_id=<YOUR_APP_ID>" >> /e_stat_api_sample/e_stat/.env
 
 ### commands
 
-```shell script
+#### e_stat
+
+```
 % pipenv run python -m e_stat --help
 Usage: __main__.py [OPTIONS] COMMAND [ARGS]...
 
@@ -41,7 +43,11 @@ Commands:
   merge-boundary  統計データと境界データを取得してマージする
   meta      統計表メタデータを取得
   stats     統計データを取得
+```
 
+#### boundary
+
+```
 % pipenv run python -m e_stat boundary --help
 Usage: __main__.py boundary [OPTIONS]
 
@@ -51,8 +57,12 @@ Options:
   -p, --pref_name TEXT   取得するshpファイルの都道府県コードを入力  [required]
   -o, --output_dir TEXT  ダウンロードファイルを格納するディレクトリのパス文字列を入力  [required]
   --help                 Show this message and exit.
+```
 
-e% pipenv run python -m e_stat ids --help
+#### ids
+
+```
+% pipenv run python -m e_stat ids --help
 Usage: __main__.py ids [OPTIONS]
 
   統計表ID一覧を取得
@@ -61,7 +71,11 @@ Options:
   -g, --gov_stats_code TEXT  取得したい統計表ID一覧の政府統計コードを入力  [required]
   -o, --output_dir TEXT      ダウンロードしたcsvを格納するディレクトリのパス文字列を入力  [required]
   --help                     Show this message and exit.
+```
 
+#### meta
+
+```
 % pipenv run python -m e_stat meta --help
 Usage: __main__.py meta [OPTIONS]
 
@@ -71,7 +85,11 @@ Options:
   -st, --stats_table_id TEXT  取得したい統計表メタデータの統計表IDを入力  [required]
   -o, --output_dir TEXT       ダウンロードしたcsvを格納するディレクトリのパス文字列を入力  [required]
   --help                      Show this message and exit.
+```
 
+#### stats
+
+```
 % pipenv run python -m e_stat stats --help
 Usage: __main__.py stats [OPTIONS]
 
@@ -87,8 +105,12 @@ Options:
   -st, --stats_table_id TEXT  取得したい統計データの統計表IDを入力  [required]
   -o, --output_dir TEXT       ダウンロードしたcsvを格納するディレクトリのパス文字列を入力  [required]
   --help                      Show this message and exit.
+```
 
-e% pipenv run python -m e_stat merge-boundary --help
+#### merge-boundary
+
+```
+% pipenv run python -m e_stat merge-boundary --help
 Usage: __main__.py merge-boundary [OPTIONS]
 
   統計データと境界データを取得してマージする
@@ -102,10 +124,11 @@ Options:
   -st, --stats_table_id TEXT  取得したい統計データの統計表IDを入力  [required]
   -o, --output_dir TEXT       ダウンロードしたcsvを格納するディレクトリのパス文字列を入力  [required]
   --help                      Show this message and exit.
-
 ```
 
 ### example
+
+- 各種コマンドはサンプルとしてshell scriptを用意しているので、そちらも参照
 
 ```shell script
 % pipenv run python -m e_stat merge-boundary \
