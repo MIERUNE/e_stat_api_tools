@@ -124,12 +124,8 @@ class AreaCode:
         """
         parent_dir = Path(dir_path)
 
-        if not parent_dir.is_dir():
-            print("ディレクトリを指定してやり直してください。システムを終了します。")
-            sys.exit(1)
-
         if not parent_dir.exists():
-            parent_dir.mkdir(parents=True)
+            parent_dir.mkdir(parents=True, exist_ok=True)
 
         return parent_dir
 

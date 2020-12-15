@@ -40,7 +40,10 @@ def write_geojson(geojson_obj, output_dir, file_name):
         file_name (str): 作成するファイルの名称
 
     """
-    data_path = Path(output_dir) / file_name
+    output_dit_obj = Path(output_dir)
+    data_path = output_dit_obj / file_name
+    if not output_dit_obj.exists():
+        output_dit_obj.mkdir(parents=True, exist_ok=True)
     with data_path.open("w") as file:
-        print(f"{data_path}を書き出します。")
         geojson.dump(geojson_obj, file, indent=2, ensure_ascii=False)
+        print(f"{data_path.resolve()}を書き出しました。")

@@ -3,7 +3,8 @@ from pathlib import Path
 import click
 
 from .env_settings import app_id
-from .lib import AreaCode, GdfDissolve, PrefCode, ShapeToGeoPandas, StatsData, StatsIds, StatsMetaData, MergeBoundaryStats
+from .lib import AreaCode, GdfDissolve, MergeBoundaryStats, PrefCode, ShapeToGeoPandas, StatsData, StatsIds, \
+    StatsMetaData
 from .utils import df_to_geojson, geojson_str_to_obj, output_csv_from_df, write_geojson
 
 
@@ -12,13 +13,17 @@ def main():
     """e-statのAPIを簡単に利用するためのCLIツール"""
 
 
-@main.command()
-@click.option('-p', '--pref_name', required=True,
-              type=str, help="取得するshpファイルの都道府県コードを入力")
-@click.option('-d', '--download_dir', required=True,
-              type=str, help="ダウンロードするshpファイルを格納するディレクトリのパス文字列を入力")
-def boundary(pref_name, download_dir):
-    """境界データを取得"""
+def _download_shp_file(pref_name, download_dir):
+    """都道府県名とダウンロードするディレクトリを指定してe-statの境界shpを取得する
+
+    Args:
+        pref_name (str): 取得するshpファイルの都道府県コード
+        download_dir (str): ダウンロードするshpファイルを格納するディレクトリのパス文字列
+
+    Returns:
+        Path: ダウンロードしたファイルのパスオブジェクト
+
+    """
     pref = PrefCode()
     pref_code = str(pref.name_to_code(pref_name)).zfill(2)
 
@@ -26,8 +31,20 @@ def boundary(pref_name, download_dir):
     output_dir = Path(download_dir).resolve()
     area_code.download_polygon_of_shp(pref_code, str(output_dir), False)
     download_path = area_code.download_file_path
+    return download_path
 
-    s2g = ShapeToGeoPandas(download_path)
+
+def _shp_to_boundary_gdf(shp_file_path):
+    """.shpかshpが格納された.zipを指定してgdfを作成する
+
+    Args:
+        shp_file_path (Path): 変換対象のshpファイルを格納するディレクトリのパス文字列
+
+    Returns:
+        gpd.GeoDataFrame: shpを変換したGeoDataFrame
+
+    """
+    s2g = ShapeToGeoPandas(str(shp_file_path.resolve()))
     gdf = s2g.gdf
 
     necessary_columns = [
@@ -46,6 +63,18 @@ def boundary(pref_name, download_dir):
     write_geojson(geojson_obj, "./created/", "boundary.geojson")
 
     output_csv_from_df(boundary_gdf, "./created/", "boundary.csv")
+    return boundary_gdf
+
+
+@main.command()
+@click.option('-p', '--pref_name', required=True,
+              type=str, help="取得するshpファイルの都道府県コードを入力")
+@click.option('-d', '--download_dir', required=True,
+              type=str, help="ダウンロードするshpファイルを格納するディレクトリのパス文字列を入力")
+def boundary(pref_name, download_dir):
+    """境界データを取得"""
+    download_path = _download_shp_file(pref_name, download_dir)
+    boundary_gdf = _shp_to_boundary_gdf(download_path)
     return boundary_gdf
 
 
@@ -124,33 +153,9 @@ def merge_boundary(
         stats_table_id,
         output_dir):
     """統計データと境界データを取得してマージする"""
-    pref = PrefCode()
-    pref_code = str(pref.name_to_code(pref_name)).zfill(2)
+    download_path = _download_shp_file(pref_name, download_dir)
 
-    area_code = AreaCode()
-    output_shp_dir = Path(download_dir).resolve()
-    area_code.download_polygon_of_shp(pref_code, str(output_shp_dir), False)
-    download_path = area_code.download_file_path
-
-    s2g = ShapeToGeoPandas(download_path)
-    gdf = s2g.gdf
-
-    necessary_columns = [
-        "KEY_CODE",
-        "PREF",
-        "CITY",
-        "PREF_NAME",
-        "CITY_NAME",
-        "geometry"]
-    geo_d = GdfDissolve(gdf, necessary_columns)
-    geo_d.join_columns("AREA_CODE", "PREF", "CITY")
-    geo_d.dissolve_poly("AREA_CODE")
-    boundary_gdf = geo_d.new_gdf
-
-    geojson_obj = geojson_str_to_obj(df_to_geojson(boundary_gdf))
-    write_geojson(geojson_obj, "./created/", "boundary.geojson")
-
-    output_csv_from_df(boundary_gdf, "./created/", "boundary.csv")
+    boundary_gdf = _shp_to_boundary_gdf(download_path)
 
     mbs = MergeBoundaryStats(app_id,
                              stats_table_id,
