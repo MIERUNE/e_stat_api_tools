@@ -116,7 +116,7 @@ Usage: __main__.py merge-boundary [OPTIONS]
   統計データと境界データを取得してマージする
 
 Options:
-  -p, --pref_name TEXT        取得するshpファイルの都道府県コードを入力  [required]
+  -p, --pref_name TEXT        取得するshpファイルの都道府県名を入力  [required]
   -d, --download_dir TEXT     ダウンロードするshpファイルを格納するディレクトリのパス文字列を入力  [required]
   -a, --area TEXT             取得する統計データの標準地域コードを入力  [required]
   -c, --class_code TEXT       取得する統計データの項目を入力  [required]

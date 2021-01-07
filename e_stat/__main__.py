@@ -131,7 +131,7 @@ def stats(areas, class_codes, years, stats_table_id, output_dir):
 
 @main.command()
 @click.option('-p', '--pref_name', required=True,
-              type=str, help="取得するshpファイルの都道府県コードを入力")
+              type=str, help="取得するshpファイルの都道府県名を入力")
 @click.option('-d', '--download_dir', required=True,
               type=str, help="ダウンロードするshpファイルを格納するディレクトリのパス文字列を入力")
 @click.option('-a', '--area', required=True, type=str,
